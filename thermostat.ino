@@ -3,11 +3,11 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-// pin 8 - Serial clock out (SCLK)
-// pin 9 - Serial data out (DIN)
-// pin 10 - Data/Command select (D/C)
-// pin 11 - LCD chip select (CS/CE)
-// pin 12 - LCD reset (RST)
+// pin 9 - Serial clock out (SCLK)
+// pin 8 - Serial data out (DIN)
+// pin 7 - Data/Command select (D/C)
+// pin 6 - LCD chip select (CS/CE)
+// pin 5 - LCD reset (RST)
 
 Adafruit_PCD8544 display = Adafruit_PCD8544(9, 8, 7, 6, 5);
 
