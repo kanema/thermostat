@@ -3,6 +3,10 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
+#include "classes/Relay.h";
+
+Relay *relay;
+
 // pin 9 - Serial clock out (SCLK)
 // pin 8 - Serial data out (DIN)
 // pin 7 - Data/Command select (D/C)
@@ -14,20 +18,12 @@ Adafruit_PCD8544 display = Adafruit_PCD8544(9, 8, 7, 6, 5);
 // DS18B20
 #define ONE_WIRE_BUS 3
 
-// Relay
-#define RELAY 11
-
 // Instance of sensor
 OneWire oneWire(ONE_WIRE_BUS);
  
 // Temp min and max.
 float tempMin = 999;
 float tempMax = 0;
-
-// Relay config
-int RELAY_DELAY = 31;
-int RELAY_CICLES = RELAY_DELAY;
-int RELAY_STATUS = HIGH;
 
 DallasTemperature sensors(&oneWire);
 DeviceAddress sensor1;
@@ -49,7 +45,7 @@ void setup()
   sensors.setWaitForConversion(true);
 
   // relay output
-  pinMode(RELAY, OUTPUT);
+  relay = new Relay(13, 31);
 }
 
 void loop()
@@ -98,22 +94,21 @@ void loop()
   display.print("C");
   display.println();
 
-  if (RELAY_CICLES >= RELAY_DELAY)
+  if (relay->isNext())
   {
     if (tempC > value)
     {
-      RELAY_STATUS = HIGH;
+      relay->setOn();
     }
     else
     {
-      RELAY_STATUS = LOW;
+      relay->setOff();
     }
-    digitalWrite(RELAY, RELAY_STATUS);
-    RELAY_CICLES = 0;
+    relay->reset();
   }
 
   display.print("Relay: ");
-  if (RELAY_STATUS == HIGH)
+  if (relay->isOn())
   {
     display.print("On");
   }
@@ -124,10 +119,10 @@ void loop()
   display.println();
   
   display.print("Next:  ");
-  display.print(RELAY_DELAY - RELAY_CICLES);
+  display.print(relay->getNext());
   
   display.display();
-
-  RELAY_CICLES++;
+  
+  relay->cicle();
   delay(1000);
 }
